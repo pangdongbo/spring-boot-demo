@@ -16,11 +16,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
-import org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource;
-import org.springframework.transaction.interceptor.TransactionInterceptor;
+import org.springframework.transaction.interceptor.*;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 
 /**
  * @author 冰飞江南
@@ -36,6 +35,10 @@ public class DefaultDataSourceConfig {
     @Autowired
     @Qualifier("DefaultTransactionManager")
     private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    @Qualifier("DefaultTransactionInterceptor")
+    private TransactionInterceptor transactionInterceptor;
 
     /**
      * 创建DataSource
@@ -73,7 +76,7 @@ public class DefaultDataSourceConfig {
      * @param defaultDataSource
      * @return
      */
-    @Bean("DefaultTransactionManager")
+    @Bean(name = "DefaultTransactionManager")
     public PlatformTransactionManager createTransactionManager(@Qualifier("DefaultDataSource")DataSource defaultDataSource) {
         PlatformTransactionManager d = new DataSourceTransactionManager(defaultDataSource);
         return d;
@@ -83,25 +86,37 @@ public class DefaultDataSourceConfig {
      * 定义事务拦截规则
      * @return
      */
-    @Bean
+    @Bean("DefaultTransactionInterceptor")
     public TransactionInterceptor txAdvice() {
-        DefaultTransactionAttribute txAttr_REQUIRED = new DefaultTransactionAttribute();
-        txAttr_REQUIRED.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 
-        DefaultTransactionAttribute txAttr_REQUIRED_READONLY = new DefaultTransactionAttribute();
-        txAttr_REQUIRED_READONLY.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        txAttr_REQUIRED_READONLY.setReadOnly(true);
+        /**
+         * 必须要存在事务
+         */
+        RuleBasedTransactionAttribute txRequiredReadonly = new RuleBasedTransactionAttribute();
+        txRequiredReadonly.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        txRequiredReadonly.setReadOnly(false);
+        txRequiredReadonly.setRollbackRules(Collections.singletonList(new RollbackRuleAttribute(Exception.class)));
 
+        /**
+         * 支持事务
+         */
+        RuleBasedTransactionAttribute txSupports = new RuleBasedTransactionAttribute();
+        txSupports.setPropagationBehavior(TransactionDefinition.PROPAGATION_SUPPORTS);
+
+        /**
+         * 定义匹配事务的方法规则
+         */
         NameMatchTransactionAttributeSource source = new NameMatchTransactionAttributeSource();
-        source.addTransactionalMethod("add*", txAttr_REQUIRED);
-        source.addTransactionalMethod("insert*", txAttr_REQUIRED);
-        source.addTransactionalMethod("save*", txAttr_REQUIRED);
-        source.addTransactionalMethod("delete*", txAttr_REQUIRED);
-        source.addTransactionalMethod("update*", txAttr_REQUIRED);
-        source.addTransactionalMethod("set*", txAttr_REQUIRED);
-        source.addTransactionalMethod("get*", txAttr_REQUIRED_READONLY);
-        source.addTransactionalMethod("query*", txAttr_REQUIRED_READONLY);
-        source.addTransactionalMethod("find*", txAttr_REQUIRED_READONLY);
+        source.addTransactionalMethod("add*", txRequiredReadonly);
+        source.addTransactionalMethod("insert*", txRequiredReadonly);
+        source.addTransactionalMethod("save*", txRequiredReadonly);
+        source.addTransactionalMethod("delete*", txRequiredReadonly);
+        source.addTransactionalMethod("del*", txRequiredReadonly);
+        source.addTransactionalMethod("update*", txRequiredReadonly);
+        source.addTransactionalMethod("init*", txRequiredReadonly);
+        source.addTransactionalMethod("get*", txSupports);
+        source.addTransactionalMethod("query*", txSupports);
+        source.addTransactionalMethod("find*", txSupports);
         return new TransactionInterceptor(transactionManager, source);
     }
 
@@ -109,11 +124,11 @@ public class DefaultDataSourceConfig {
      * 创建事务订阅对象
      * @return
      */
-    @Bean
+    @Bean(name = "DefaultAdviceAdvisor")
     public Advisor txAdviceAdvisor() {
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-        pointcut.setExpression("execution (* com.***.service.*.*(..))");
-        return new DefaultPointcutAdvisor(pointcut, txAdvice());
+        pointcut.setExpression("execution(* com.powersmart..*.service..*.*(..))");
+        return new DefaultPointcutAdvisor(pointcut, transactionInterceptor);
     }
 
 }

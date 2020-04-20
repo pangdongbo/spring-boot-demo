@@ -54,13 +54,8 @@ public class DemoServiceImpl implements IDemoService {
     }
 
     @Override
-    public UserVO insert(UserVO vo) {
-        UserVO v = dao.insert(vo);
-        int i = 0;
-        if (1 / i == 0) {
-            System.out.println(1);
-        }
-        return v;
+    public UserVO insert(UserVO vo) throws Exception {
+        return dao.insert(vo);
     }
 
     @Override

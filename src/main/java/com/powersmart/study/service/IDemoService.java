@@ -47,7 +47,7 @@ public interface IDemoService {
      * 添加用户（方法一）
      * @return
      */
-    UserVO insert(UserVO vo);
+    UserVO insert(UserVO vo) throws Exception;
 
     /**
      * 添加用户（方法二）

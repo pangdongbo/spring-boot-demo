@@ -45,7 +45,7 @@ public class DemoController {
 	}
 
 	@RequestMapping("/insert")
-	public UserVO insert() {
+	public UserVO insert() throws Exception {
 		return service.insert(this.crteateUser());
 		//return dao.insertByNameParameter(this.crteateUser());
 	}
