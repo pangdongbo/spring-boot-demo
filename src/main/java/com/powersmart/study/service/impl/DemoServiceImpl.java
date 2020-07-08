@@ -1,16 +1,10 @@
-/******************************************************************************
- * Copyright (C) 2017 ShenZhen Powerdata Information Technology Co.,Ltd
- * All Rights Reserved.
- * 本软件为深圳博安达开发研制。未经本公司正式书面同意，其他任何个人、团体不得使用、
- * 复制、修改或发布本软件.
- *****************************************************************************/
-
 package com.powersmart.study.service.impl;
 
 import com.powersmart.study.dao.jdbc.DemoDAO;
 import com.powersmart.study.model.UserVO;
 import com.powersmart.study.service.IDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,8 +42,10 @@ public class DemoServiceImpl implements IDemoService {
         return dao.query(vo);
     }
 
+    @Cacheable(value = "user", key = "targetClass + methodName + #p0")
     @Override
     public UserVO getUserById(int id) {
+        System.err.println("开查询数据库");
         return dao.getUserById(id);
     }
 
