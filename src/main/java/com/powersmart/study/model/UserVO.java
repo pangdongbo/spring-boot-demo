@@ -2,6 +2,7 @@ package com.powersmart.study.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Date;
  */
 
 @Data
-public class UserVO {
+public class UserVO implements Serializable {
 
     /**
      * 主键

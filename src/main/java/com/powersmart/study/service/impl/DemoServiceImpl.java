@@ -42,7 +42,7 @@ public class DemoServiceImpl implements IDemoService {
         return dao.query(vo);
     }
 
-    @Cacheable(value = "user", key = "targetClass + methodName + #p0")
+    @Cacheable(value = "user")
     @Override
     public UserVO getUserById(int id) {
         System.err.println("开查询数据库");
