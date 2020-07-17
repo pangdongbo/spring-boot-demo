@@ -37,6 +37,11 @@ import javax.annotation.Resource;
 @Configuration
 public class RedisConfig extends CachingConfigurerSupport {
 
+    /**
+     * 定义redis缓存的命名空间
+     */
+    public static final String NAME_SPACE = "demo/";
+
     @Resource
     private RedisConnectionFactory factory;
 
@@ -50,6 +55,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     public KeyGenerator keyGenerator() {
         return (o, method, objects) -> {
             StringBuilder sb = new StringBuilder();
+            sb.append(NAME_SPACE);
             sb.append(o.getClass().getName()).append(".");
             sb.append(method.getName()).append("/");
             for (Object obj : objects) {
