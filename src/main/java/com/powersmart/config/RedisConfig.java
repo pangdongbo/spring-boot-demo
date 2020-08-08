@@ -5,7 +5,7 @@
  * 复制、修改或发布本软件.
  *****************************************************************************/
 
-package com.powersmart.study.redis.config;
+package com.powersmart.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

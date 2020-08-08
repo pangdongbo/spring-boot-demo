@@ -32,7 +32,7 @@ public class StringCacheService<T> {
 	 * @param value
 	 */
 	public void set(final String key, final T value) {
-		getOperations().set(RedisConfig.NAME_SPACE + key, value);
+		getOperations().set(this.getKey(key), value);
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class StringCacheService<T> {
 	 * @param value
 	 */
 	public void set(final String key, final T value, long timeout) {
-		getOperations().set(RedisConfig.NAME_SPACE + key, value, timeout);
+		getOperations().set(this.getKey(key), value, timeout);
 	}
 
 	/**
@@ -49,7 +49,11 @@ public class StringCacheService<T> {
 	 * @param values
 	 */
 	public void hmSet(final Map<String, T> values) {
-		getOperations().multiSet(values);
+		Map<String, T> map = new LinkedHashMap<>();
+		for (String key : values.keySet()) {
+			map.put(this.getKey(key), values.get(key));
+		}
+		getOperations().multiSet(map);
 	}
 
 	/**
@@ -60,7 +64,7 @@ public class StringCacheService<T> {
 	 * @return
 	 */
 	public boolean setNX(final String key, final T value, long timeout) {
-		return getOperations().setIfAbsent(key, value, timeout, TimeUnit.MILLISECONDS);
+		return getOperations().setIfAbsent(this.getKey(key), value, timeout, TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -69,7 +73,7 @@ public class StringCacheService<T> {
 	 * @return
 	 */
 	public T get(final String key) {
-		return getOperations().get(key);
+		return getOperations().get(this.getKey(key));
 	}
 
 	/**
@@ -80,18 +84,20 @@ public class StringCacheService<T> {
 	public List<T> hmGet(final String... keys) {
 		Set<String> keySet = new HashSet<String>();
 		for (String key : keys) {
-			keySet.add(key);
+			keySet.add(this.getKey(key));
 		}
 		return getOperations().multiGet(keySet);
 	}
 
 	/**
-	 * 根据多个key获取缓存
+	 * 根据key删除缓存
 	 * @param keys
 	 * @return
 	 */
-	public List<T> hmGet(final Collection<String> keys) {
-		return getOperations().multiGet(keys);
+	public void del(final String... keys) {
+		for (String key : keys) {
+			getOperations().getOperations().delete(this.getKey(key));
+		}
 	}
 
 	/**
@@ -100,7 +106,7 @@ public class StringCacheService<T> {
 	 * @return
 	 */
 	public Integer append(final String key, final String value) {
-		return getOperations().append(key, value);
+		return getOperations().append(this.getKey(key), value);
 	}
 
 	/**
@@ -109,7 +115,7 @@ public class StringCacheService<T> {
 	 * @return
 	 */
 	public Long incr(final String key) {
-		return getOperations().increment(key);
+		return getOperations().increment(this.getKey(key));
 	}
 
 	/**
@@ -118,7 +124,7 @@ public class StringCacheService<T> {
 	 * @return
 	 */
 	public Long incrBy(final String key, final Long step) {
-		return getOperations().increment(key, step);
+		return getOperations().increment(this.getKey(key), step);
 	}
 
 	/**
@@ -127,7 +133,7 @@ public class StringCacheService<T> {
 	 * @return
 	 */
 	public Long decr(final String key) {
-		return getOperations().decrement(key);
+		return getOperations().decrement(this.getKey(key));
 	}
 
 	/**
@@ -136,7 +142,7 @@ public class StringCacheService<T> {
 	 * @return
 	 */
 	public Long decrBy(final String key, final Long step) {
-		return getOperations().decrement(key, step);
+		return getOperations().decrement(this.getKey(key), step);
 	}
 
 	/**
@@ -152,6 +158,15 @@ public class StringCacheService<T> {
 			}
 		}
 		return operations;
+	}
+
+	/**
+	 * 获取应用key
+	 * @param key
+	 * @return
+	 */
+	private String getKey(String key) {
+		return RedisConfig.NAME_SPACE + key;
 	}
 
 }

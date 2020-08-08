@@ -1,4 +1,4 @@
-package com.powersmart.study;
+package com.powersmart;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
