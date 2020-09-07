@@ -1,6 +1,6 @@
 package com.powersmart.study.redis.service;
 
-import com.powersmart.study.redis.config.RedisConfig;
+import com.powersmart.config.RedisConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;

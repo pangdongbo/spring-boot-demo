@@ -9,6 +9,8 @@ package com.powersmart.init.model;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author 冰飞江南
  * @Title:
@@ -16,12 +18,22 @@ import lombok.Data;
  * @since JDK1.8
  */
 @Data
-public class InitDataVO {
+public class UserVO {
 
     /**
      * 自增ID
      */
     private int id;
+
+    /**
+     * 姓
+     */
+    private String firstName;
+
+    /**
+     * 名字
+     */
+    private String lastName;
 
     /**
      * 姓名
@@ -37,5 +49,20 @@ public class InitDataVO {
      * 年龄
      */
     private int age;
+
+    /**
+     * 生日
+     */
+    private Date birthDay;
+
+    /**
+     * 性别
+     */
+    private int sex;
+
+    /**
+     * 部门
+     */
+    private int dept;
 
 }

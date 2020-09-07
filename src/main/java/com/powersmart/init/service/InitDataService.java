@@ -8,7 +8,8 @@
 package com.powersmart.init.service;
 
 import com.powersmart.init.dao.InitDataDAO;
-import com.powersmart.init.model.InitDataVO;
+import com.powersmart.init.model.DeptVO;
+import com.powersmart.init.model.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +30,15 @@ public class InitDataService {
     @Autowired
     private InitDataDAO dao;
 
-    public void initData(String tableName, List<InitDataVO> lst) {
+    public void initUser(List<UserVO> lst) {
 
-        dao.batchInsert(tableName, lst);
+        dao.batchInsertUser(lst);
+
+    }
+
+    public void initDept(List<DeptVO> lst) {
+
+        dao.batchInsertDept(lst);
 
     }
 

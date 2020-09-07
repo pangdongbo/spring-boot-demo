@@ -7,8 +7,8 @@
 
 package com.powersmart.init.dao;
 
-import com.powersmart.init.model.InitDataVO;
-import com.powersmart.study.model.UserVO;
+import com.powersmart.init.model.DeptVO;
+import com.powersmart.init.model.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -19,7 +19,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author 冰飞江南
@@ -41,16 +40,45 @@ public class InitDataDAO {
      * 批量添加用户
      * @return
      */
-    public int[] batchInsert(String tableName, List<InitDataVO> lst) {
+    public int[] batchInsertUser(List<UserVO> lst) {
         StringBuilder sbSQL = new StringBuilder(50);
-        sbSQL.append("insert into "+ tableName +" (name, phone, age) values (?, ?, ?)");
+        sbSQL.append("insert into t_user (name, phone, age, birthday, sex, dept, first_name, last_name) values (?, ?, ?, ?, ?, ?, ?, ?)");
         int[] result = jdbcTemplate.batchUpdate(sbSQL.toString(), new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement pstmt, int idx) throws SQLException {
-                InitDataVO vo = lst.get(idx);
+                UserVO vo = lst.get(idx);
                 pstmt.setString(1, vo.getName());
                 pstmt.setString(2, vo.getPhone());
                 pstmt.setInt(3, vo.getAge());
+                pstmt.setDate(4, new Date(System.currentTimeMillis()));
+                pstmt.setInt(5, vo.getSex());
+                pstmt.setInt(6, vo.getDept());
+                pstmt.setString(7, vo.getFirstName());
+                pstmt.setString(8, vo.getLastName());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return lst.size();
+            }
+        });
+        return result;
+    }
+
+    /**
+     * 批量添加部门
+     * @return
+     */
+    public int[] batchInsertDept(List<DeptVO> lst) {
+        StringBuilder sbSQL = new StringBuilder(50);
+        sbSQL.append("insert into t_dept (id, name) values (?, ?)");
+        int[] result = jdbcTemplate.batchUpdate(sbSQL.toString(), new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement pstmt, int idx) throws SQLException {
+                DeptVO vo = lst.get(idx);
+                pstmt.setLong(1, vo.getId());
+                pstmt.setString(2, vo.getName());
+                System.out.println(vo.getName());
             }
 
             @Override
